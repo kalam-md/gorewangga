@@ -50,11 +50,6 @@
                 <i class="fas fa-map w-5 text-center"></i>
                 <span>Lapangan</span>
             </a>
-            @else
-            <a href="{{ route('lapangan.index') }}" class="flex items-center gap-3 px-3 py-2 {{ request()->routeIs('lapangan.*') ? 'bg-teal-700' : 'hover:bg-teal-700' }} rounded-md">
-                <i class="fas fa-map w-5 text-center"></i>
-                <span>Lapangan</span>
-            </a>
             @endif
             <a href="{{ route('jadwal.index') }}" class="flex items-center gap-3 px-3 py-2 {{ request()->routeIs('jadwal.*') ? 'bg-teal-700' : 'hover:bg-teal-700' }} rounded-md">
                 <i class="fas fa-calendar-alt w-5 text-center"></i>
@@ -107,11 +102,6 @@
                 <i class="fas fa-users w-5 text-center"></i>
                 <span>Pengguna</span>
             </a>
-            <a href="{{ route('lapangan.index') }}" class="flex items-center gap-3 px-3 py-2 {{ request()->routeIs('lapangan.*') ? 'bg-teal-700' : 'hover:bg-teal-700' }} rounded-md">
-                <i class="fas fa-map w-5 text-center"></i>
-                <span>Lapangan</span>
-            </a>
-            @else
             <a href="{{ route('lapangan.index') }}" class="flex items-center gap-3 px-3 py-2 {{ request()->routeIs('lapangan.*') ? 'bg-teal-700' : 'hover:bg-teal-700' }} rounded-md">
                 <i class="fas fa-map w-5 text-center"></i>
                 <span>Lapangan</span>

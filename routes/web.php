@@ -122,7 +122,9 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:petugas');
 
     Route::prefix('laporan')->name('laporan.')->group(function () {
-    Route::get('/', [LaporanController::class, 'index'])->name('index');
-    Route::get('/cetak-pdf/{id?}', [LaporanController::class, 'cetakPdf'])->name('cetak-pdf');
+        Route::get('/', [LaporanController::class, 'index'])->name('index');
+        Route::get('/cetak-pdf/{id?}', [LaporanController::class, 'cetakPdf'])->name('cetak-pdf');
+    });
 });
-});
+
+Route::get('/public/jadwal/events', [JadwalController::class, 'getEvents'])->name('public.jadwal.events');

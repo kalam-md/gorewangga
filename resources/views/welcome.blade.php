@@ -1,276 +1,645 @@
+{{-- HALAMAN LANDING PAGE --}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>GOR EWANGGA - DASHBOARD</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Gor Ewangga - Booking Lapangan Olahraga</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <style>
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(45, 212, 191, 0.8)), 
+                        url('/img-home/home.jpeg') no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+        .fc-toolbar-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #374151 !important;
+        }
+        .fc-button {
+            background-color: white;
+            border: 1px solid #d1d5db !important;
+            color: #374151;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            transition: background-color 0.2s;
+        }
+        .fc-button:hover {
+            background-color: #f3f4f6 !important;
+        }
+        .fc-button-primary {
+            background-color: #0d9488 !important;
+            border-color: #0d9488 !important;
+            color: white;
+        }
+        .fc-button-primary:hover {
+            background-color: #0f766e !important;
+        }
+        .fc-event {
+            border-radius: 0.375rem;
+            padding: 2px 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        .fc-event:hover {
+            opacity: 0.8;
+        }
+        .fc-daygrid-event {
+            border-radius: 4px;
+        }
+        .fc-timegrid-event {
+            border-radius: 4px;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans">
-
-<div class="flex h-screen overflow-hidden">
-  
-    <!-- Desktop Sidebar -->
-    <aside class="hidden md:flex md:flex-col w-64 bg-teal-800 text-white">
-        <div class="flex items-center justify-center h-16 bg-teal-900">
-            <span class="text-xl font-bold">GOR Ewangga</span>
-        </div>
-        <nav class="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
-            <a href="#" class="flex items-center gap-3 px-3 py-2 bg-teal-700 rounded-md">
-                <i class="fas fa-tachometer-alt w-5 text-center"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2 hover:bg-teal-700 rounded-md">
-                <i class="fas fa-users w-5 text-center"></i>
-                <span>Pengguna</span>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2 hover:bg-teal-700 rounded-md">
-                <i class="fas fa-box w-5 text-center"></i>
-                <span>Lapangan</span>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2 hover:bg-teal-700 rounded-md">
-                <i class="fas fa-chart-bar w-5 text-center"></i>
-                <span>Jadwal</span>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2 hover:bg-teal-700 rounded-md">
-                <i class="fas fa-cog w-5 text-center"></i>
-                <span>Laporan</span>
-            </a>
-        </nav>
-        <div class="p-4 border-t border-teal-700 flex items-center">
-            <img class="w-10 h-10 rounded-full" src="https://placehold.co/400" alt="User">
-            <div class="ml-3">
-                <p class="text-sm font-medium">Admin User</p>
-                <p class="text-xs text-teal-200">admin@example.com</p>
+<body class="bg-gray-50">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-teal-600">
+                            <i class="fas fa-futbol mr-2"></i>
+                            Gor Ewangga
+                        </h1>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="#hero" class="text-gray-700 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium scroll-link">Beranda</a>
+                            <a href="#about" class="text-gray-700 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium scroll-link">Tentang</a>
+                            <a href="#jadwal" class="text-gray-700 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium scroll-link">Jadwal</a>
+                            <a href="#kontak" class="text-gray-700 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium scroll-link">Kontak</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-4 flex items-center md:ml-6 space-x-3">
+                        <a href="/login" class="bg-white text-teal-600 border border-teal-600 hover:bg-teal-50 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                            Login
+                        </a>
+                        <a href="/register" class="bg-teal-600 text-white hover:bg-teal-700 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                            Register
+                        </a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button type="button" id="mobile-menu-button" class="text-gray-700 hover:text-teal-600 focus:outline-none focus:text-teal-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
             </div>
         </div>
-    </aside>
 
-    <!-- Mobile Sidebar -->
-    <aside id="mobileSidebar" class="fixed inset-y-0 left-0 w-64 bg-teal-800 text-white transform -translate-x-full transition-transform duration-300 z-50 md:hidden">
-        <div class="flex items-center justify-between h-16 px-4 bg-teal-900">
-            <span class="text-xl font-bold">GOR Ewangga</span>
-            <button id="closeSidebar" class="w-[35px] h-[35px] flex justify-center items-center rounded-full hover:bg-teal-700">
-                <i class="fas fa-times"></i>
-            </button>
+        <!-- Mobile menu -->
+        <div class="md:hidden" id="mobile-menu" style="display: none;">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
+                <a href="#hero" class="text-gray-700 hover:text-teal-600 block px-3 py-2 rounded-md text-base font-medium scroll-link">Beranda</a>
+                <a href="#about" class="text-gray-700 hover:text-teal-600 block px-3 py-2 rounded-md text-base font-medium scroll-link">Tentang</a>
+                <a href="#jadwal" class="text-gray-700 hover:text-teal-600 block px-3 py-2 rounded-md text-base font-medium scroll-link">Jadwal</a>
+                <a href="#kontak" class="text-gray-700 hover:text-teal-600 block px-3 py-2 rounded-md text-base font-medium scroll-link">Kontak</a>
+                <div class="border-t border-gray-200 pt-3 mt-3">
+                    <a href="/login" class="block w-full text-center bg-white text-teal-600 border border-teal-600 hover:bg-teal-50 px-4 py-2 rounded-md text-sm font-medium mb-2 transition-colors">
+                        Login
+                    </a>
+                    <a href="/register" class="block w-full text-center bg-teal-600 text-white hover:bg-teal-700 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                        Register
+                    </a>
+                </div>
+            </div>
         </div>
-        <nav class="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
-            <a href="#" class="flex items-center gap-3 px-3 py-2 bg-teal-700 rounded-md">
-                <i class="fas fa-tachometer-alt w-5 text-center"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2 hover:bg-teal-700 rounded-md">
-                <i class="fas fa-users w-5 text-center"></i>
-                <span>Pengguna</span>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2 hover:bg-teal-700 rounded-md">
-                <i class="fas fa-box w-5 text-center"></i>
-                <span>Lapangan</span>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2 hover:bg-teal-700 rounded-md">
-                <i class="fas fa-chart-bar w-5 text-center"></i>
-                <span>Jadwal</span>
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2 hover:bg-teal-700 rounded-md">
-                <i class="fas fa-cog w-5 text-center"></i>
-                <span>Laporan</span>
-            </a>
-        </nav>
-    </aside>
+    </nav>
 
-    <!-- Main Content -->
-    <div class="flex flex-col flex-1 overflow-hidden">
+    <!-- Hero Section -->
+    <section id="hero" class="hero-bg min-h-screen flex items-center">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+            <div class="max-w-3xl mx-auto">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                    Booking Lapangan Olahraga
+                    <span class="block text-yellow-300">Mudah & Cepat</span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-gray-100">
+                    Temukan dan pesan lapangan olahraga favorit Anda dengan sistem booking online yang praktis dan terpercaya
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/register" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg transition-colors">
+                        <i class="fas fa-calendar-plus mr-2"></i>
+                        Mulai Booking
+                    </a>
+                    <a href="#jadwal" class="bg-transparent border-2 border-white hover:bg-white hover:text-teal-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors scroll-link">
+                        <i class="fas fa-eye mr-2"></i>
+                        Lihat Jadwal
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce">
+            <i class="fas fa-chevron-down text-2xl"></i>
+        </div>
+    </section>
 
-        <!-- Top Navbar -->
-        <header class="flex items-center justify-between h-16 px-4 bg-white border-b border-gray-200">
-            <div class="flex items-center space-x-3">
-                <button id="sidebarToggle" class="md:hidden p-2 text-gray-500 rounded-md hover:bg-gray-100">
-                    <i class="fas fa-bars"></i>
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Tentang Gor Ewangga</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Pusat olahraga terlengkap dengan fasilitas modern dan sistem booking online yang memudahkan Anda
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Mengapa Memilih Kami?</h3>
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-shield-alt text-teal-600 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-gray-900">Booking Aman & Terpercaya</h4>
+                                <p class="text-gray-600">Sistem booking online yang aman dengan konfirmasi pembayaran langsung</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-clock text-teal-600 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-gray-900">24/7 Akses Booking</h4>
+                                <p class="text-gray-600">Pesan kapan saja, dimana saja melalui platform online kami</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-star text-teal-600 text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-semibold text-gray-900">Fasilitas Premium</h4>
+                                <p class="text-gray-600">Lapangan berkualitas tinggi dengan perawatan terbaik</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-first md:order-last">
+                    <img src="/img-home/home.jpeg" 
+                         alt="Sports facility" 
+                         class="rounded-lg shadow-xl w-full">
+                </div>
+            </div>
+
+            <!-- Sports Types -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="text-center p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-futbol text-green-600 text-2xl"></i>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900">Futsal</h4>
+                    <p class="text-gray-600 text-sm mt-2">Lapangan futsal indoor dengan rumput sintetis berkualitas</p>
+                </div>
+                <div class="text-center p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
+                    <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-basketball-ball text-orange-600 text-2xl"></i>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900">Basket</h4>
+                    <p class="text-gray-600 text-sm mt-2">Lapangan basket indoor dengan standar internasional</p>
+                </div>
+                <div class="text-center p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-table-tennis text-purple-600 text-2xl"></i>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900">Badminton</h4>
+                    <p class="text-gray-600 text-sm mt-2">Lapangan badminton dengan kualitas lantai terbaik</p>
+                </div>
+                <div class="text-center p-6 bg-gray-50 rounded-lg hover:shadow-lg transition-shadow">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-tennis-ball text-red-600 text-2xl"></i>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900">Tenis</h4>
+                    <p class="text-gray-600 text-sm mt-2">Lapangan tenis outdoor dengan surface berkualitas</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Schedule Section -->
+    <section id="jadwal" class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Jadwal Lapangan</h2>
+                <p class="text-xl text-gray-600">
+                    Lihat jadwal booking lapangan yang telah terisi dan temukan waktu yang tersedia
+                </p>
+            </div>
+
+            <!-- Calendar Legend -->
+            <div class="mb-8 p-6 bg-white rounded-lg shadow">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Keterangan Warna:</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-green-500 rounded mr-3"></div>
+                        <span class="text-sm text-gray-700">Futsal</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-yellow-500 rounded mr-3"></div>
+                        <span class="text-sm text-gray-700">Basket</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-purple-500 rounded mr-3"></div>
+                        <span class="text-sm text-gray-700">Badminton</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-red-500 rounded mr-3"></div>
+                        <span class="text-sm text-gray-700">Tenis</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="kontak" class="py-16 bg-teal-600">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center text-white">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Siap untuk Mulai Booking?</h2>
+                <p class="text-xl mb-8 text-teal-100">
+                    Daftar sekarang dan nikmati kemudahan booking lapangan olahraga
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/register" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-8 rounded-lg text-lg transition-colors">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        Daftar Sekarang
+                    </a>
+                    <a href="tel:+628123456789" class="bg-transparent border-2 border-white hover:bg-white hover:text-teal-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors">
+                        <i class="fas fa-phone mr-2"></i>
+                        Hubungi Kami
+                    </a>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-map-marker-alt text-white text-xl"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold mb-2">Alamat</h4>
+                        <p class="text-teal-100">Jl. Olahraga No. 123<br>South Tangerang, Banten</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-phone text-white text-xl"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold mb-2">Telepon</h4>
+                        <p class="text-teal-100">+62 812-3456-7890</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-envelope text-white text-xl"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold mb-2">Email</h4>
+                        <p class="text-teal-100">info@Gor Ewangga.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-4">
+                    <i class="fas fa-futbol mr-2"></i>
+                    Gor Ewangga
+                </h3>
+                <p class="text-gray-400 mb-4">
+                    Platform booking lapangan olahraga terpercaya di Indonesia
+                </p>
+                <div class="flex justify-center space-x-6 mb-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-facebook-f text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-instagram text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-whatsapp text-xl"></i>
+                    </a>
+                </div>
+                <div class="border-t border-gray-700 pt-6">
+                    <p class="text-gray-400">
+                        © 2025 Gor Ewangga. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal for Event Details -->
+    <div id="eventDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg max-w-lg w-full mx-4">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Detail Booking</h3>
+                <button onclick="closeEventDetail()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
                 </button>
-                <h1 class="text-lg font-semibold text-gray-800">Dashboard</h1>
             </div>
-            <div class="flex items-center space-x-4">
-                <button class="p-2 text-gray-500 rounded-full hover:bg-gray-100">
-                    <i class="fas fa-bell"></i>
+            
+            <div class="p-6" id="eventDetailContent">
+                <!-- Event details will be populated here -->
+            </div>
+            
+            <div class="flex justify-end px-6 py-4 border-t border-gray-200">
+                <button onclick="closeEventDetail()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-md transition-colors">
+                    Tutup
                 </button>
-                <div class="flex items-center space-x-2">
-                    <img class="w-8 h-8 rounded-full" src="https://placehold.co/400" alt="User">
-                    <span class="hidden md:inline">Admin</span>
-                </div>
             </div>
-        </header>
-
-        <!-- Page Content -->
-        <main class="flex-1 overflow-y-auto p-4">
-            
-            <!-- Overview Title -->
-            <h2 class="text-xl font-semibold text-gray-800 mb-6">Overview</h2>
-            
-            <!-- Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <!-- Card 1 -->
-                <div class="bg-white rounded-lg shadow p-6 flex flex-col justify-between">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500">Total Users</p>
-                            <p class="text-2xl font-semibold text-gray-800">1,254</p>
-                        </div>
-                        <div class="w-[50px] h-[50px] flex justify-center items-center rounded-full bg-teal-100 text-teal-600">
-                            <i class="fas fa-users"></i>
-                        </div>
-                    </div>
-                    <div class="mt-4 text-sm">
-                        <span class="text-green-500 font-medium">+12.5%</span>
-                        <span class="text-gray-500 ml-1">from last month</span>
-                    </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="bg-white rounded-lg shadow p-6 flex flex-col justify-between">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500">New Orders</p>
-                            <p class="text-2xl font-semibold text-gray-800">320</p>
-                        </div>
-                        <div class="w-[50px] h-[50px] flex justify-center items-center rounded-full bg-green-100 text-green-600">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                    </div>
-                    <div class="mt-4 text-sm">
-                        <span class="text-green-500 font-medium">+8.1%</span>
-                        <span class="text-gray-500 ml-1">from last week</span>
-                    </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="bg-white rounded-lg shadow p-6 flex flex-col justify-between">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500">Revenue</p>
-                            <p class="text-2xl font-semibold text-gray-800">$12,450</p>
-                        </div>
-                        <div class="w-[50px] h-[50px] flex justify-center items-center rounded-full bg-yellow-100 text-yellow-600">
-                            <i class="fas fa-dollar-sign"></i>
-                        </div>
-                    </div>
-                    <div class="mt-4 text-sm">
-                        <span class="text-green-500 font-medium">+15.4%</span>
-                        <span class="text-gray-500 ml-1">from last month</span>
-                    </div>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="bg-white rounded-lg shadow p-6 flex flex-col justify-between">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-500">Support Tickets</p>
-                            <p class="text-2xl font-semibold text-gray-800">89</p>
-                        </div>
-                        <div class="w-[50px] h-[50px] flex justify-center items-center rounded-full bg-red-100 text-red-600">
-                            <i class="fas fa-life-ring"></i>
-                        </div>
-                    </div>
-                    <div class="mt-4 text-sm">
-                        <span class="text-red-500 font-medium">-3.2%</span>
-                        <span class="text-gray-500 ml-1">from last week</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Charts -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <div class="bg-white rounded-lg shadow p-4">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Tren Pemesanan per Bulan</h3>
-                    <canvas id="ordersLineChart" height="150"></canvas>
-                </div>
-                <div class="bg-white rounded-lg shadow p-4">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Pemesanan per Lapangan</h3>
-                    <canvas id="fieldBarChart" height="150"></canvas>
-                </div>
-            </div>
-
-            <!-- Table -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-800">Recent Orders</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase text-left">Order ID</th>
-                                <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase text-left">Customer</th>
-                                <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase text-left">Date</th>
-                                <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase text-left">Amount</th>
-                                <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase text-left">Status</th>
-                                <th class="px-6 py-3 text-xs font-medium text-gray-500 uppercase text-left">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr>
-                                <td class="px-6 py-4 text-sm font-medium text-gray-900">#ORD-1234</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">John Doe</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">2023-05-15</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">$245.00</td>
-                                <td class="px-6 py-4">
-                                    <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Completed</span>
-                                </td>
-                                <td class="px-6 py-4 text-sm font-medium">
-                                    <a href="#" class="text-teal-600 hover:text-teal-900">View</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="px-6 py-4 border-t border-gray-200">
-                    <button class="text-teal-600 hover:text-teal-800 text-sm font-medium">View all orders</button>
-                </div>
-            </div>
-        </main>
+        </div>
     </div>
-</div>
 
-<script>
-    const sidebar = document.getElementById('mobileSidebar');
-        document.getElementById('sidebarToggle').addEventListener('click', () => {
-        sidebar.classList.remove('-translate-x-full');
-    });
-    document.getElementById('closeSidebar').addEventListener('click', () => {
-        sidebar.classList.add('-translate-x-full');
-    });
+    <!-- Loading Indicator -->
+    <div id="calendarLoading" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-lg shadow-lg z-50 hidden">
+        <div class="flex items-center">
+            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-teal-600 mr-3"></div>
+            <span class="text-gray-700">Memuat jadwal...</span>
+        </div>
+    </div>
 
-    // Line Chart
-    new Chart(document.getElementById('ordersLineChart'), {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul'],
-            datasets: [{
-                label: 'Jumlah Pemesanan',
-                data: [45, 60, 50, 80, 90, 70, 100],
-                borderColor: '#2563eb',
-                backgroundColor: 'rgba(37, 99, 235, 0.2)',
-                tension: 0.4,
-                fill: true
-            }]
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/id.min.js"></script>
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.style.display = mobileMenu.style.display === 'none' ? 'block' : 'none';
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.scroll-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+                // Close mobile menu if open
+                document.getElementById('mobile-menu').style.display = 'none';
+            });
+        });
+
+        // Initialize FullCalendar
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const loadingEl = document.getElementById('calendarLoading');
+            
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: 'id',
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                },
+                nowIndicator: true,
+                navLinks: true,
+                dayMaxEvents: 3, // batasi event per hari di month view
+                moreLinkText: function(num) {
+                    return '+ ' + num + ' lainnya';
+                },
+                height: 'auto',
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                },
+                slotLabelFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                },
+                loading: function(isLoading) {
+                    if (isLoading) {
+                        loadingEl.classList.remove('hidden');
+                    } else {
+                        loadingEl.classList.add('hidden');
+                    }
+                },
+                events: function(info, successCallback, failureCallback) {
+                    fetch('/public/jadwal/events', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        successCallback(data);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching events:', error);
+                        // Fallback ke data demo jika API gagal
+                        const demoEvents = [
+                            {
+                                id: 'demo-1',
+                                title: 'Data tidak dapat dimuat',
+                                start: new Date().toISOString().split('T')[0] + 'T08:00:00',
+                                end: new Date().toISOString().split('T')[0] + 'T10:00:00',
+                                backgroundColor: '#6B7280',
+                                borderColor: '#6B7280',
+                                textColor: '#ffffff',
+                                extendedProps: {
+                                    lapangan: 'Sistem tidak dapat terhubung',
+                                    jenis: 'Error',
+                                    penyewa: 'Silahkan coba lagi',
+                                    phone: '-',
+                                    total_harga: '-',
+                                    metode_bayar: '-',
+                                    jadwal_detail: '-',
+                                    durasi: '-'
+                                }
+                            }
+                        ];
+                        successCallback(demoEvents);
+                        failureCallback(error);
+                    });
+                },
+                eventClick: function(info) {
+                    showEventDetail(info.event);
+                },
+                eventDidMount: function(info) {
+                    // Tambahkan tooltip
+                    if (info.event.extendedProps.lapangan && info.event.extendedProps.penyewa) {
+                        info.el.setAttribute('title', 
+                            info.event.extendedProps.lapangan + ' - ' + 
+                            info.event.extendedProps.penyewa
+                        );
+                    }
+                }
+            });
+
+            calendar.render();
+        });
+
+        function showEventDetail(event) {
+            const modal = document.getElementById('eventDetailModal');
+            const content = document.getElementById('eventDetailContent');
+            
+            const props = event.extendedProps;
+            
+            let startTime = '-';
+            let endTime = '-';
+            let eventDate = '-';
+            
+            try {
+                if (event.start) {
+                    startTime = event.start.toLocaleTimeString('id-ID', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    });
+                    eventDate = event.start.toLocaleDateString('id-ID', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                }
+                if (event.end) {
+                    endTime = event.end.toLocaleTimeString('id-ID', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    });
+                }
+            } catch (e) {
+                console.error('Error formatting dates:', e);
+            }
+
+            content.innerHTML = `
+                <div class="space-y-4">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                            <i class="fas fa-map-marker-alt text-teal-600 mr-2"></i>
+                            Informasi Lapangan
+                        </h4>
+                        <div class="grid grid-cols-1 gap-2 text-sm">
+                            <div><span class="font-medium">Lapangan:</span> ${props.lapangan || '-'}</div>
+                            <div><span class="font-medium">Jenis:</span> ${props.jenis || '-'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                            <i class="fas fa-clock text-blue-600 mr-2"></i>
+                            Jadwal
+                        </h4>
+                        <div class="grid grid-cols-1 gap-2 text-sm">
+                            <div><span class="font-medium">Tanggal:</span> ${eventDate}</div>
+                            <div><span class="font-medium">Waktu:</span> ${startTime} - ${endTime}</div>
+                            <div><span class="font-medium">Durasi:</span> ${props.durasi || '-'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                            <i class="fas fa-user text-green-600 mr-2"></i>
+                            Informasi Penyewa
+                        </h4>
+                        <div class="grid grid-cols-1 gap-2 text-sm">
+                            <div><span class="font-medium">Nama:</span> ${props.penyewa || '-'}</div>
+                            <div><span class="font-medium">No. Telp:</span> ${props.phone || '-'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                            <i class="fas fa-credit-card text-yellow-600 mr-2"></i>
+                            Pembayaran
+                        </h4>
+                        <div class="grid grid-cols-1 gap-2 text-sm">
+                            <div><span class="font-medium">Total:</span> ${props.total_harga || '-'}</div>
+                            <div><span class="font-medium">Metode:</span> ${props.metode_bayar || '-'}</div>
+                            <div><span class="font-medium text-green-600">Status: Lunas</span></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
         }
-    });
 
-    // Bar Chart
-    new Chart(document.getElementById('fieldBarChart'), {
-        type: 'bar',
-        data: {
-            labels: ['Lapangan A', 'Lapangan B', 'Lapangan C', 'Lapangan D'],
-            datasets: [{
-                label: 'Jumlah Pemesanan',
-                data: [120, 90, 75, 60],
-                backgroundColor: ['#2563eb', '#16a34a', '#f59e0b', '#dc2626']
-            }]
+        function closeEventDetail() {
+            document.getElementById('eventDetailModal').classList.add('hidden');
         }
-    });
-</script>
 
+        // Close modal when clicking outside
+        document.getElementById('eventDetailModal').addEventListener('click', function(e) {
+            if (e.target.id === 'eventDetailModal') {
+                closeEventDetail();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeEventDetail();
+            }
+        });
+
+        // Add active navbar highlight on scroll
+        window.addEventListener('scroll', function() {
+            const sections = ['hero', 'about', 'jadwal', 'kontak'];
+            const navLinks = document.querySelectorAll('.scroll-link');
+            
+            let current = '';
+            sections.forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    const sectionTop = section.offsetTop - 100;
+                    if (pageYOffset >= sectionTop) {
+                        current = sectionId;
+                    }
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('text-teal-600');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('text-teal-600');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
