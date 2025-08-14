@@ -197,7 +197,7 @@
     <div class="tiket">
         <!-- Header -->
         <div class="header">
-            <div class="logo">ARENA SPORT</div>
+            <div class="logo">GOR EWANGGA</div>
             <div class="subtitle">Sistem Pemesanan Lapangan</div>
         </div>
 

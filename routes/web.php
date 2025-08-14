@@ -40,52 +40,110 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     
     Route::get('/dashboard', function () {
-        // Hitung statistik dasar
-        $totalUsers = User::where('role', 'penyewa')->count();
-        $totalPemesanan = Pemesanan::count();
-        $totalPendapatan = Pemesanan::where('status', 'sukses')
-            ->whereHas('pembayaran', function($q) {
-                $q->where('status', 'valid');
-            })->sum('total_harga');
-        $pemesananPending = Pemesanan::where('status', 'pending')->count();
+        $user = auth()->user();
         
-        // Data untuk chart pemesanan per bulan (6 bulan terakhir)
-        $chartData = [];
-        for ($i = 5; $i >= 0; $i--) {
-            $month = Carbon::now()->subMonths($i);
-            $count = Pemesanan::whereYear('created_at', $month->year)
-                ->whereMonth('created_at', $month->month)
-                ->count();
-            $chartData[] = [
-                'label' => $month->format('M Y'),
-                'value' => $count
+        if ($user->role === 'penyewa') {
+            // Dashboard untuk penyewa - hanya data milik mereka sendiri
+            $totalPemesanan = Pemesanan::where('user_id', $user->id)->count();
+            $totalPendapatan = Pemesanan::where('user_id', $user->id)
+                ->where('status', 'sukses')
+                ->whereHas('pembayaran', function($q) {
+                    $q->where('status', 'valid');
+                })->sum('total_harga');
+            $pemesananPending = Pemesanan::where('user_id', $user->id)
+                ->where('status', 'pending')->count();
+            
+            // Data untuk chart pemesanan per bulan (6 bulan terakhir) - hanya milik user
+            $chartData = [];
+            for ($i = 5; $i >= 0; $i--) {
+                $month = Carbon::now()->subMonths($i);
+                $count = Pemesanan::where('user_id', $user->id)
+                    ->whereYear('created_at', $month->year)
+                    ->whereMonth('created_at', $month->month)
+                    ->count();
+                $chartData[] = [
+                    'label' => $month->format('M Y'),
+                    'value' => $count
+                ];
+            }
+            
+            // Data untuk chart lapangan (pemesanan per jenis lapangan) - hanya milik user
+            $fieldData = Pemesanan::where('user_id', $user->id)
+                ->join('lapangans', 'pemesanans.lapangan_id', '=', 'lapangans.id')
+                ->selectRaw('lapangans.jenis, COUNT(*) as total')
+                ->groupBy('lapangans.jenis')
+                ->get();
+            
+            // Recent orders (5 terakhir) - hanya milik user
+            $recentOrders = Pemesanan::where('user_id', $user->id)
+                ->with(['user', 'lapangan', 'pembayaran'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+
+            // Statistik untuk penyewa
+            $stats = [
+                'total_users' => 1, // Hanya diri sendiri
+                'total_pemesanan' => $totalPemesanan,
+                'total_pendapatan' => $totalPendapatan, // Total yang sudah dibayar user
+                'pemesanan_pending' => $pemesananPending,
+                'pemesanan_hari_ini' => Pemesanan::where('user_id', $user->id)
+                    ->whereDate('tanggal_pemesanan', today())->count(),
+                'pemesanan_bulan_ini' => Pemesanan::where('user_id', $user->id)
+                    ->whereMonth('created_at', now()->month)
+                    ->whereYear('created_at', now()->year)->count(),
+                'lapangan_aktif' => Lapangan::where('is_active', true)->count(), // Semua lapangan aktif
+                'rata_rata_pemesanan' => $totalPemesanan > 0 ? round($totalPendapatan / $totalPemesanan, 0) : 0
+            ];
+            
+        } else {
+            // Dashboard untuk petugas/admin - semua data
+            $totalUsers = User::where('role', 'penyewa')->count();
+            $totalPemesanan = Pemesanan::count();
+            $totalPendapatan = Pemesanan::where('status', 'sukses')
+                ->whereHas('pembayaran', function($q) {
+                    $q->where('status', 'valid');
+                })->sum('total_harga');
+            $pemesananPending = Pemesanan::where('status', 'pending')->count();
+            
+            // Data untuk chart pemesanan per bulan (6 bulan terakhir)
+            $chartData = [];
+            for ($i = 5; $i >= 0; $i--) {
+                $month = Carbon::now()->subMonths($i);
+                $count = Pemesanan::whereYear('created_at', $month->year)
+                    ->whereMonth('created_at', $month->month)
+                    ->count();
+                $chartData[] = [
+                    'label' => $month->format('M Y'),
+                    'value' => $count
+                ];
+            }
+            
+            // Data untuk chart lapangan (pemesanan per jenis lapangan)
+            $fieldData = Pemesanan::join('lapangans', 'pemesanans.lapangan_id', '=', 'lapangans.id')
+                ->selectRaw('lapangans.jenis, COUNT(*) as total')
+                ->groupBy('lapangans.jenis')
+                ->get();
+            
+            // Recent orders (5 terakhir)
+            $recentOrders = Pemesanan::with(['user', 'lapangan', 'pembayaran'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+
+            // Statistik untuk petugas/admin
+            $stats = [
+                'total_users' => $totalUsers,
+                'total_pemesanan' => $totalPemesanan,
+                'total_pendapatan' => $totalPendapatan,
+                'pemesanan_pending' => $pemesananPending,
+                'pemesanan_hari_ini' => Pemesanan::whereDate('tanggal_pemesanan', today())->count(),
+                'pemesanan_bulan_ini' => Pemesanan::whereMonth('created_at', now()->month)
+                    ->whereYear('created_at', now()->year)->count(),
+                'lapangan_aktif' => Lapangan::where('is_active', true)->count(),
+                'rata_rata_pemesanan' => $totalPemesanan > 0 ? round($totalPendapatan / $totalPemesanan, 0) : 0
             ];
         }
-        
-        // Data untuk chart lapangan (pemesanan per jenis lapangan)
-        $fieldData = Pemesanan::join('lapangans', 'pemesanans.lapangan_id', '=', 'lapangans.id')
-            ->selectRaw('lapangans.jenis, COUNT(*) as total')
-            ->groupBy('lapangans.jenis')
-            ->get();
-        
-        // Recent orders (5 terakhir)
-        $recentOrders = Pemesanan::with(['user', 'lapangan', 'pembayaran'])
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
-
-        // Statistik tambahan
-        $stats = [
-            'total_users' => $totalUsers,
-            'total_pemesanan' => $totalPemesanan,
-            'total_pendapatan' => $totalPendapatan,
-            'pemesanan_pending' => $pemesananPending,
-            'pemesanan_hari_ini' => Pemesanan::whereDate('tanggal_pemesanan', today())->count(),
-            'pemesanan_bulan_ini' => Pemesanan::whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year)->count(),
-            'lapangan_aktif' => Lapangan::where('is_active', true)->count(),
-            'rata_rata_pemesanan' => $totalPemesanan > 0 ? round($totalPendapatan / $totalPemesanan, 0) : 0
-        ];
 
         return view('dashboard.index', compact(
             'chartData', 

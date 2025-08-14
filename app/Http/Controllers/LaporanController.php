@@ -15,6 +15,11 @@ class LaporanController extends Controller
             ->orderBy('tanggal_pemesanan', 'desc')
             ->orderBy('created_at', 'desc');
 
+        $user = auth()->user();
+        if ($user->role === 'penyewa') {
+            $query->where('user_id', $user->id);
+        }
+
         // Filter berdasarkan status pemesanan
         if ($request->filled('status')) {
             $query->where('status', $request->status);

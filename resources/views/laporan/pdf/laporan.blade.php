@@ -163,7 +163,7 @@
 <body>
     <!-- Header Laporan -->
     <div class="header">
-        <div class="logo">ARENA SPORT</div>
+        <div class="logo">GOR EWANGGA</div>
         <div class="subtitle">LAPORAN PEMESANAN LAPANGAN</div>
     </div>
 

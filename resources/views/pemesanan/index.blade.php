@@ -148,6 +148,12 @@
                                         Batal
                                     </button>
                                 @endif
+
+                                <button onclick="cetakTiket({{ $pemesanan->id }})" 
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs inline-flex items-center">
+                                    <i class="fas fa-ticket-alt mr-1"></i>
+                                    Cetak Tiket
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -285,6 +291,18 @@
 
 @push('scripts')
 <script>
+function cetakTiket(id) {
+    // Buat form hidden untuk mengirim request POST
+    let form = document.createElement('form');
+    form.method = 'GET';
+    form.action = `/laporan/cetak-pdf/${id}`;
+    form.target = '_blank';
+    
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}
+
 function openUploadModal(pemesananId) {
     document.getElementById('uploadForm').action = `/pemesanan/${pemesananId}/upload-bukti`;
     document.getElementById('uploadModal').classList.remove('hidden');

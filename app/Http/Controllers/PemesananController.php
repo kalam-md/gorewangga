@@ -23,7 +23,7 @@ class PemesananController extends Controller
         $query = Pemesanan::with(['lapangan', 'user', 'pembayaran'])
             ->latest();
             
-        if ($user->role === 'penyewa' || $user->role === 'petugas') {
+        if ($user->role === 'penyewa') {
             $query->where('user_id', $user->id);
         }
         
